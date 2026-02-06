@@ -1,0 +1,32 @@
+{
+  "rules": {
+    ".read": true,
+    "users": {
+      "$uid": {
+        ".write": "$uid === auth.uid || root.child('users').child(auth.uid).child('role').val() === 'admin'"
+      }
+    },
+    "notices": {
+      ".write": "root.child('users').child(auth.uid).child('role').val() === 'admin'"
+    },
+    "community": {
+      ".write": "root.child('users').child(auth.uid).child('role').val() === 'admin'"
+    },
+    "campaigns": {
+      // Admin has full control over campaigns (create/delete/edit)
+      ".write": "root.child('users').child(auth.uid).child('role').val() === 'admin'",
+      "$campaignId": {
+        "likes": {
+          "$uid": {
+            // Users can only toggle their own like
+            ".write": "auth != null && $uid === auth.uid"
+          }
+        },
+        "comments": {
+          // Authenticated users can post comments
+          ".write": "auth != null"
+        }
+      }
+    }
+  }
+}
